@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Gold crescent: a gold disc with a background-coloured disc overlapping it. -->
+    <path
+        android:fillColor="#d4af37"
+        android:pathData="M54,54m-24,0a24,24 0 1,0 48,0a24,24 0 1,0 -48,0" />
+    <path
+        android:fillColor="#0f463e"
+        android:pathData="M63,50m-20,0a20,20 0 1,0 40,0a20,20 0 1,0 -40,0" />
+</vector>

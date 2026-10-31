@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.SalahQibla" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="colorPrimary">#0f463e</item>
+        <item name="colorPrimaryDark">#081b19</item>
+        <item name="android:statusBarColor">#081b19</item>
+        <item name="android:windowBackground">#081b19</item>
+    </style>
+</resources>

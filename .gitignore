@@ -1,0 +1,15 @@
+# Build outputs
+build/
+app/build/
+.gradle/
+.kotlin/
+
+# Local machine settings
+local.properties
+.idea/
+*.iml
+
+# Signing keys: never commit these
+*.jks
+*.keystore
+keystore.properties

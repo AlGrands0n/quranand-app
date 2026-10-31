@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">مواقيت الصلاة والقبلة</string>
+
+    <!--
+        Google's official TEST IDs. They are safe for development.
+        Before publishing, replace them with your own AdMob IDs
+        (AdMob console > Apps / Ad units). Never click your own ads.
+    -->
+    <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
+    <string name="admob_banner_id">ca-app-pub-3940256099942544/6300978111</string>
+</resources>
