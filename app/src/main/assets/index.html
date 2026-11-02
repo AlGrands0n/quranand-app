@@ -10,10 +10,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-:root{--bg:#081b19;--bg2:#0e2723;--card:rgba(255,255,255,.055);--line:rgba(255,255,255,.09);--text:#f1f7f5;--muted:#93aea8;--accent:#34d399;--gold:#d4af37;--nav:rgba(7,24,21,.94);--shadow:0 12px 32px rgba(0,0,0,.35);--r:20px;--font:'Tajawal','Segoe UI',Tahoma,sans-serif}
-[data-theme="light"]{--bg:#f1f7f5;--bg2:#e2eeea;--card:#fff;--line:#d8e6e1;--text:#0d2b26;--muted:#56716b;--nav:rgba(255,255,255,.96);--shadow:0 8px 24px rgba(15,60,50,.1);--accent:#0f9b7a}
-[data-accent="gold"]{--accent:#d4af37}
-[data-accent="gold"][data-theme="light"]{--accent:#a97f12}
+:root{--accent-rgb:52,211,153;--bg:#081b19;--bg2:#0e2723;--card:rgba(255,255,255,.055);--line:rgba(255,255,255,.09);--text:#f1f7f5;--muted:#93aea8;--accent:#34d399;--gold:#d4af37;--nav:rgba(7,24,21,.94);--shadow:0 12px 32px rgba(0,0,0,.35);--r:20px;--font:'Tajawal','Segoe UI',Tahoma,sans-serif}
+[data-theme="light"]{--accent-rgb:15,155,122;--bg:#f1f7f5;--bg2:#e2eeea;--card:#fff;--line:#d8e6e1;--text:#0d2b26;--muted:#56716b;--nav:rgba(255,255,255,.96);--shadow:0 8px 24px rgba(15,60,50,.1);--accent:#0f9b7a}
+[data-accent="gold"]{--accent:#d4af37;--accent-rgb:212,175,55}
+[data-accent="gold"][data-theme="light"]{--accent:#a97f12;--accent-rgb:169,127,18}
 body{font-family:var(--font);color:var(--text);background:linear-gradient(170deg,var(--bg),var(--bg2)) fixed;min-height:100vh;font-size:16px;line-height:1.5}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:inherit}
 input{font:inherit}
@@ -29,7 +29,7 @@ svg{flex:none}
 .glist{overflow:hidden}
 .muted{color:var(--muted);font-size:13.5px}
 .fine{color:var(--muted);font-size:14px;text-align:center;line-height:1.75}
-.hero{position:relative;overflow:hidden;border-radius:28px;padding:22px 22px 20px;color:#f3fbf8;background:radial-gradient(120% 90% at 0% 0%,rgba(52,211,153,.38),transparent 55%),radial-gradient(90% 80% at 100% 100%,rgba(212,175,55,.28),transparent 60%),linear-gradient(140deg,#0f463e,#0a2723);border:1px solid rgba(255,255,255,.08);box-shadow:var(--shadow)}
+.hero{position:relative;overflow:hidden;border-radius:28px;padding:22px 22px 20px;color:#f3fbf8;background:radial-gradient(120% 90% at 0% 0%,rgba(var(--accent-rgb),.38),transparent 55%),radial-gradient(90% 80% at 100% 100%,rgba(212,175,55,.28),transparent 60%),linear-gradient(140deg,#0f463e,#0a2723);border:1px solid rgba(255,255,255,.08);box-shadow:var(--shadow)}
 .hero .pill{display:inline-block;font-size:13px;padding:4px 12px;border-radius:99px;background:rgba(255,255,255,.13)}
 .hero .hname{font-size:30px;font-weight:800;margin-top:10px}
 .hero .htime{font-size:17px;opacity:.85;direction:ltr;text-align:start}
@@ -44,9 +44,9 @@ svg{flex:none}
 .jm svg{color:var(--gold)}
 .prow{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
 .prow:last-child{border-bottom:0}
-.prow.next{background:linear-gradient(90deg,rgba(52,211,153,.16),transparent 70%)}
+.prow.next{background:linear-gradient(90deg,rgba(var(--accent-rgb),.16),transparent 70%)}
 .prow.past .pname,.prow.past .ptime{opacity:.5}
-.picon{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:rgba(52,211,153,.13);color:var(--accent)}
+.picon{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:rgba(var(--accent-rgb),.13);color:var(--accent)}
 .pname{flex:1;font-weight:700;display:flex;align-items:center;gap:8px}
 .ptime{font-weight:800;font-size:18px;font-variant-numeric:tabular-nums;direction:ltr}
 .badge{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--accent);color:#04211c;font-weight:800}
@@ -60,11 +60,11 @@ svg{flex:none}
 .nav button{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);font-size:12px;font-weight:700;padding:4px 0}
 .nav .ni{width:52px;height:30px;border-radius:99px;display:grid;place-items:center}
 .nav button.on{color:var(--accent)}
-.nav button.on .ni{background:rgba(52,211,153,.16)}
+.nav button.on .ni{background:rgba(var(--accent-rgb),.16)}
 .row{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;border-bottom:1px solid var(--line);text-align:start}
 .row:last-child{border-bottom:0}
 button.row:active{background:rgba(127,127,127,.08)}
-.ri{width:36px;height:36px;border-radius:11px;background:rgba(52,211,153,.13);color:var(--accent);display:grid;place-items:center;flex:none}
+.ri{width:36px;height:36px;border-radius:11px;background:rgba(var(--accent-rgb),.13);color:var(--accent);display:grid;place-items:center;flex:none}
 .rt{flex:1;font-weight:600;min-width:0}
 .rt small{display:block;color:var(--muted);font-size:12.5px;font-weight:500}
 .rv{color:var(--muted);font-size:14px;font-weight:600;white-space:nowrap}
@@ -106,7 +106,7 @@ button.row:active{background:rgba(127,127,127,.08)}
 .dtitle{font-size:24px;font-weight:800;line-height:1.6}
 .dsub{color:var(--muted);font-size:14px;direction:ltr}
 .ring-wrap{position:relative;width:250px;height:250px;margin:16px auto 6px;border-radius:50%;display:grid;place-items:center;cursor:pointer;user-select:none;touch-action:manipulation}
-.ring-wrap::before{content:"";position:absolute;inset:24px;border-radius:50%;background:radial-gradient(circle at 30% 25%,rgba(52,211,153,.22),transparent 60%),var(--bg2);border:1px solid var(--line)}
+.ring-wrap::before{content:"";position:absolute;inset:24px;border-radius:50%;background:radial-gradient(circle at 30% 25%,rgba(var(--accent-rgb),.22),transparent 60%),var(--bg2);border:1px solid var(--line)}
 .ring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
 .ring-bg{fill:none;stroke:var(--line);stroke-width:10}
 .ring-fg{fill:none;stroke:var(--accent);stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset .3s ease}
@@ -133,7 +133,7 @@ button.row:active{background:rgba(127,127,127,.08)}
 .adh-ar{font-size:20px;line-height:1.9;font-weight:700}
 .adh-en{color:var(--muted);font-size:14px;margin-top:6px;direction:ltr;text-align:start}
 .adh-foot{display:flex;justify-content:flex-end;margin-top:10px}
-.adh-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;background:rgba(52,211,153,.13);color:var(--accent);font-weight:800;direction:ltr}
+.adh-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;background:rgba(var(--accent-rgb),.13);color:var(--accent);font-weight:800;direction:ltr}
 .adh.fin .adh-btn{background:var(--accent);color:#04211c}
 .adh-btn:disabled{cursor:default}
 .navm{display:flex;align-items:center;justify-content:space-between;direction:ltr;margin:10px 2px 14px}
@@ -144,7 +144,7 @@ button.row:active{background:rgba(127,127,127,.08)}
 .cal th{padding:12px 6px;color:var(--muted);font-weight:700;border-bottom:1px solid var(--line);background:rgba(127,127,127,.06)}
 .cal td{padding:10px 6px;text-align:center;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;direction:ltr}
 .cal tr:last-child td{border-bottom:0}
-.cal tr.today td{background:rgba(52,211,153,.16);font-weight:800}
+.cal tr.today td{background:rgba(var(--accent-rgb),.16);font-weight:800}
 .cal .dd{font-weight:800;display:block}
 .cal .sm{display:block;font-size:11px;color:var(--muted);font-weight:600}
 .cal tr.fri .dd{color:var(--gold)}
@@ -163,7 +163,7 @@ button.row:active{background:rgba(127,127,127,.08)}
 .mwrap{position:fixed;inset:0;background:rgba(0,0,0,.6);display:grid;place-items:center;padding:20px;z-index:60}
 .modal{width:100%;max-width:380px;background:var(--bg2);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:var(--shadow);animation:pop .2s ease}
 @keyframes pop{from{transform:scale(.96);opacity:0}to{transform:none;opacity:1}}
-.m-ic{width:56px;height:56px;border-radius:18px;background:rgba(52,211,153,.14);color:var(--accent);display:grid;place-items:center;margin:0 auto 12px}
+.m-ic{width:56px;height:56px;border-radius:18px;background:rgba(var(--accent-rgb),.14);color:var(--accent);display:grid;place-items:center;margin:0 auto 12px}
 .modal h3{text-align:center;font-size:20px;margin-bottom:8px}
 .m-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0 8px}
 .link{display:block;margin:8px auto 0;color:var(--accent);font-weight:700;font-size:14px}
@@ -184,7 +184,7 @@ button.row:active{background:rgba(127,127,127,.08)}
 .qp-ctl{display:flex;align-items:center;gap:8px;flex:none}
 .qp-b{width:38px;height:38px;border-radius:13px;display:grid;place-items:center;background:var(--bg);border:1px solid var(--line);color:var(--text)}
 .qp-play{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:var(--accent);color:#04211c}
-.qrow .qnum{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:rgba(52,211,153,.13);color:var(--accent);font-weight:800;font-size:14px;flex:none;direction:ltr}
+.qrow .qnum{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:rgba(var(--accent-rgb),.13);color:var(--accent);font-weight:800;font-size:14px;flex:none;direction:ltr}
 .qcont{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;margin-top:12px;text-align:start;cursor:pointer}
 .qcont .rt{flex:1;font-weight:700}
 .qcont .rt small{display:block;color:var(--muted);font-size:12.5px;font-weight:500;margin-top:2px}
@@ -198,24 +198,16 @@ button.row:active{background:rgba(127,127,127,.08)}
 .verse{padding:16px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .2s}
 .verse:last-child{border-bottom:0}
 .verse:active{background:rgba(127,127,127,.06)}
-.verse.on{background:linear-gradient(90deg,rgba(52,211,153,.16),transparent 75%)}
+.verse.on{background:linear-gradient(90deg,rgba(var(--accent-rgb),.16),transparent 75%)}
 .v-top{display:flex;align-items:center;margin-bottom:6px}
 .v-num{width:32px;height:32px;border-radius:11px;display:grid;place-items:center;background:var(--bg);border:1px solid var(--line);font-size:13px;font-weight:800;color:var(--accent);direction:ltr}
 .verse.on .v-num{background:var(--accent);color:#04211c;border-color:transparent}
 .basmala{text-align:center;font-family:'Amiri',serif;font-size:26px;color:var(--gold);padding:20px 12px 8px}
-#boot{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(120% 80% at 50% 0%,#0f463e,#081b19 70%);color:#f3fbf8;transition:opacity .4s ease,visibility .4s}
-#boot.gone{opacity:0;visibility:hidden}
-.boot-mark{animation:bootIn .9s cubic-bezier(.2,.8,.2,1) both}
-.boot-name{font-size:32px;font-weight:800;letter-spacing:.5px;animation:bootIn .9s .15s cubic-bezier(.2,.8,.2,1) both}
-.boot-bar{width:120px;height:3px;border-radius:9px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:6px}
-.boot-bar span{display:block;width:40%;height:100%;border-radius:9px;background:linear-gradient(90deg,#d4af37,#fde68a);animation:bootSlide 1.2s ease-in-out infinite}
-@keyframes bootIn{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:none}}
-@keyframes bootSlide{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
 .page{animation:fadeUp .4s ease both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .v-top{justify-content:space-between}
 .v-dl{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
-.v-dl.done{color:var(--accent);border-color:transparent;background:rgba(52,211,153,.13)}
+.v-dl.done{color:var(--accent);border-color:transparent;background:rgba(var(--accent-rgb),.13)}
 .dl-actions{display:grid;grid-template-columns:1fr 1.4fr auto;gap:8px;margin:12px 0 14px}
 .dl-actions button{padding:11px 14px;justify-content:center}
 .dlt{height:6px;margin:0 2px 4px}
@@ -224,7 +216,6 @@ button.row:active{background:rgba(127,127,127,.08)}
 </style>
 </head>
 <body>
-<div id="boot" aria-hidden="true"><div class="boot-mark"><svg viewBox="0 0 108 108" width="88" height="88" aria-hidden="true"><circle cx="54" cy="54" r="24" fill="#d4af37"/><circle cx="63" cy="50" r="20" fill="#0f463e"/></svg></div><div class="boot-name">ميقات</div><div class="boot-bar"><span></span></div></div>
 <main class="app" id="app"></main>
 <div id="sheet-root"></div>
 <div id="modal-root"></div>
@@ -240,7 +231,7 @@ const $=s=>document.querySelector(s);
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const pad=n=>String(n).padStart(2,'0');
 const PRAYERS=['fajr','sunrise','dhuhr','asr','maghrib','isha'];
-const PICON={fajr:'moon',sunrise:'sunrise',dhuhr:'sun',asr:'asr',maghrib:'sunset',isha:'moon'};
+const PICON={fajr:'moon',sunrise:'sunrise',dhuhr:'sun',asr:'asr',asrh:'asr',maghrib:'sunset',isha:'moon'};
 const KAABA={lat:21.422487,lng:39.826206};
 const RING_C=2*Math.PI*118;
 
@@ -443,7 +434,7 @@ en:{
 const KEY='salah-qibla-v1';
 const DEFAULT={
   lang:'ar',theme:'dark',accent:'emerald',hour12:false,tab:'home',
-  loc:{...CITIES[0]},method:'mwl',custom:{fajr:18,isha:17},asr:'standard',highLat:'angle',hijriOffset:0,
+  loc:{...CITIES[0]},method:'mwl',custom:{fajr:18,isha:17},asrSel:['standard'],highLat:'angle',hijriOffset:0,
   offsets:{fajr:0,sunrise:0,dhuhr:0,asr:0,maghrib:0,isha:0},
   notify:false,preMin:10,suhoor:true,bubble:false,
   consent:null,unlockedGold:false,
@@ -451,7 +442,7 @@ const DEFAULT={
   dhikrSub:'tasbeeh',adhList:'morning',adhDay:'',
   adh:{morning:ADHKAR.morning.map(()=>0),evening:ADHKAR.evening.map(()=>0)},
   cal:null,fired:[],
-  quran:{reciter:'ar.alafasy',en:true,font:26,offline:false,last:{s:1,a:1}}
+  quran:{reciter:'ar.alafasy',en:true,font:26,offline:false,bg:false,last:{s:1,a:1}}
 };
 function deepMerge(a,b){
   for(const k in b){
@@ -521,6 +512,11 @@ function methodCfg(){
   if(S.method==='custom') return {fajr:S.custom.fajr,isha:S.custom.isha};
   return METHODS[S.method]||METHODS.mwl;
 }
+/* Columns shown for the day: Asr appears once per selected school ('asr' = majority, 'asrh' = Hanafi). */
+function colKeys(){
+  const sel=S.asrSel&&S.asrSel.length?S.asrSel:['standard'];
+  return PRAYERS.flatMap(k=>k!=='asr'?[k]:[...(sel.includes('standard')?['asr']:[]),...(sel.includes('hanafi')?['asrh']:[])]);
+}
 function prayersFor(day){
   const {y,m,d}=day, lat=S.loc.lat, lng=S.loc.lng, cfg=methodCfg();
   const baseMs=Date.UTC(y,m-1,d), jd0=baseMs/864e5+2440587.5;
@@ -532,20 +528,17 @@ function prayersFor(day){
   const h0=xOf(-0.833);
   const dayLen=h0>1?0:h0<-1?24:2*acosD(h0)/15;
   const night=24-dayLen;
-  const asrF=S.asr==='hanafi'?2:1;
-  const asrAng=arccotD(asrF+Math.abs(tanD(lat-decl)));
+  const asrAt=F=>{ const v=noon+H(arccotD(F+Math.abs(tanD(lat-decl)))); return isNaN(v)?noon+dayLen/4:v; };
   const sunrise=noon-dayLen/2, sunset=noon+dayLen/2;
   let fajr=noon-H(-cfg.fajr);
-  let asr=noon+H(asrAng);
   let isha=cfg.ishaMin!=null?sunset+cfg.ishaMin/60:noon+H(-cfg.isha);
   const portion=a=>S.highLat==='middle'?0.5:S.highLat==='seventh'?1/7:a/60;
   if(isNaN(fajr)) fajr=sunrise-portion(cfg.fajr)*night;
   if(isNaN(isha)) isha=sunset+portion(cfg.isha??17)*night;
-  if(isNaN(asr)) asr=noon+dayLen/4;
-  const times={fajr,sunrise,dhuhr:noon,asr,maghrib:sunset,isha};
-  return PRAYERS.map(k=>({
+  const times={fajr,sunrise,dhuhr:noon,asr:asrAt(1),asrh:asrAt(2),maghrib:sunset,isha};
+  return colKeys().map(k=>({
     key:k,
-    date:new Date(Math.round((baseMs+(times[k]+(S.offsets[k]||0)/60)*36e5)/6e4)*6e4)
+    date:new Date(Math.round((baseMs+(times[k]+(S.offsets[k==='asrh'?'asr':k]||0)/60)*36e5)/6e4)*6e4)
   }));
 }
 function recalc(){
@@ -806,10 +799,10 @@ function screenCalendar(){
     const wd=new Intl.DateTimeFormat(LOC(),{weekday:'short',timeZone:'UTC'}).format(dt);
     const isT=TODAY.today.y===c.y&&TODAY.today.m===c.m&&TODAY.today.d===d;
     const isF=dt.getUTCDay()===5;
-    const cells=PRAYERS.map(k=>`<td>${fmtTime(pr.find(p=>p.key===k).date)}</td>`).join('');
+    const cells=colKeys().map(k=>`<td>${fmtTime(pr.find(p=>p.key===k).date)}</td>`).join('');
     rows+=`<tr class="${isT?'today':''} ${isF?'fri':''}"><td><span class="dd">${d}</span><span class="sm">${wd} · ${hijriParts(adjDate(dt)).d}</span></td>${cells}</tr>`;
   }
-  const heads=`<th>${t('date')}</th>${PRAYERS.map(k=>`<th>${t(k)}</th>`).join('')}`;
+  const heads=`<th>${t('date')}</th>${colKeys().map(k=>`<th>${t(k)}</th>`).join('')}`;
   return `${header(t('calendar'))}
   <div class="navm">
     <button class="ib" data-act="calm:-1" aria-label="previous">${ic('chevL',18)}</button>
@@ -918,7 +911,7 @@ const rowOff=k=>`<div class="row"><span class="ri">${ic(PICON[k])}</span><span c
 const rowAng=k=>`<div class="row"><span class="ri">${ic('calc')}</span><span class="rt">${t(k==='fajr'?'fajrAngle':'ishaAngle')}</span><div class="stepper"><button data-act="ang:${k}:-0.5" aria-label="-">−</button><span>${S.custom[k].toFixed(1)}°</span><button data-act="ang:${k}:0.5" aria-label="+">+</button></div></div>`;
 const group=(title,rows)=>`<div class="h2">${title}</div><div class="card glist">${rows}</div>`;
 const methodLabel=()=>(METHODS[S.method]||METHODS.mwl)[S.lang];
-const asrLabel=()=>S.asr==='hanafi'?t('asrHanafi'):t('asrStd');
+const asrLabel=()=>{ const s=S.asrSel||['standard']; return s.length>1?t('asrAll'):s[0]==='hanafi'?t('asrHanafiShort'):t('asrStdShort'); };
 const hlLabel=()=>S.highLat==='middle'?t('hlMiddle'):S.highLat==='seventh'?t('hlSeventh'):t('hlAngle');
 const preLabel=()=>S.preMin?`${S.preMin} ${t('minutes')}`:t('atTime');
 const consentLabel=()=>S.consent==='personalized'?t('consentOn'):S.consent==='non-personalized'?t('consentOff'):'—';
@@ -996,10 +989,31 @@ function renderCityList(q){
     return `<button class="row" data-act="city:${i}"><span class="rt">${S.lang==='ar'?c.ar:c.en}<small>${S.lang==='ar'?c.en:c.ar}</small></span>${current?`<span class="check">${ic('check',18)}</span>`:''}</button>`;
   }).join(''):`<div class="empty">—</div>`;
 }
+/* ===== Asr schools: multi-select ===== */
+Object.assign(T.ar,{asrh:'العصر (الحنفي)',asrStdShort:'الجمهور',asrHanafiShort:'الحنفي',asrAll:'الكل معاً',asrAllSub:'عرض المذهبين معاً',asrHint:'اختر مذهباً أو أكثر. تظهر أوقات كل مذهب مختار في الرئيسية والتقويم والتنبيهات.',qBgPlay:'تشغيل التلاوة في الخلفية'});
+Object.assign(T.en,{asrh:'Asr (Hanafi)',asrStdShort:'Standard',asrHanafiShort:'Hanafi',asrAll:'All together',asrAllSub:'Show both schools together',asrHint:'Choose one or more schools. The times of each selected school appear on the home screen, calendar and alerts.',qBgPlay:'Play recitation in background'});
+function toggleAsr(x){
+  const sel=new Set(S.asrSel&&S.asrSel.length?S.asrSel:['standard']);
+  if(x==='all'){ sel.add('standard'); sel.add('hanafi'); }
+  else if(sel.has(x)){ if(sel.size>1) sel.delete(x); }
+  else sel.add(x);
+  S.asrSel=[...sel];
+  save(); recalc(); paintAsr(); render();
+}
+function openAsr(){
+  openSheet(`<div class="sh-title">${t('asrSchool')}</div><p class="sheet-p">${t('asrHint')}</p><div class="card glist" id="asrbody" style="margin-top:12px"></div>`);
+  paintAsr();
+}
+function paintAsr(){
+  const b=$('#asrbody'); if(!b) return;
+  const sel=S.asrSel||['standard'], both=sel.includes('standard')&&sel.includes('hanafi');
+  const item=(k,label,sub,on)=>`<button class="row" data-act="asrt:${k}"><span class="chk-box${on?' on':''}">${on?ic('check',14):''}</span><span class="rt">${label}${sub?`<small>${sub}</small>`:''}</span></button>`;
+  b.innerHTML=item('standard',t('asrStd'),'',sel.includes('standard'))+item('hanafi',t('asrHanafi'),'',sel.includes('hanafi'))+item('all',t('asrAll'),t('asrAllSub'),both);
+}
 function openSheetFor(x){
   if(x==='city') return openCity();
   if(x==='method') return sheetList(t('method'),Object.keys(METHODS).map(k=>[k,METHODS[k][S.lang],methodSub(k)]),S.method,'method');
-  if(x==='asr') return sheetList(t('asrSchool'),[['standard',t('asrStd')],['hanafi',t('asrHanafi')]],S.asr,'asr');
+  if(x==='asr') return openAsr();
   if(x==='highlat') return sheetList(t('highLat'),[['angle',t('hlAngle')],['middle',t('hlMiddle')],['seventh',t('hlSeventh')]],S.highLat,'highlat');
   if(x==='hijri') return sheetList(t('hijriAdj'),[-2,-1,0,1,2].map(n=>[n,`${signed(n)} ${t('days')}`]),S.hijriOffset,'hijri');
   if(x==='pre') return sheetList(t('preAlarm'),[[0,t('atTime')],[5,`5 ${t('minutes')}`],[10,`10 ${t('minutes')}`],[15,`15 ${t('minutes')}`],[20,`20 ${t('minutes')}`],[30,`30 ${t('minutes')}`]],S.preMin,'pre');
@@ -1294,8 +1308,8 @@ function qAudio(){
     const el=new Audio();
     el.preload='auto';
     el.addEventListener('ended',()=>qStep(1));
-    el.addEventListener('play',()=>{ setMediaSession(); render(); });
-    el.addEventListener('pause',()=>render());
+    el.addEventListener('play',()=>{ setMediaSession(); nat('setPlaying',true); render(); });
+    el.addEventListener('pause',()=>{ nat('setPlaying',false); render(); });
     el.addEventListener('error',()=>{ if(el.getAttribute('src')){ QX.busy=false; toast(t('qRecErr')); render(); } });
     QX.el=el;
   }
@@ -1452,9 +1466,8 @@ function quranRows(){
   return rowBtn('book',t('qReciter'),rec[S.lang],'qreciter')+
     rowSw('doc',t('qShowEn'),S.quran.en,'qen')+
     (NATIVE?rowBtn('download',t('qAudioMgr'),`${fmtNum(QX.dlSet.size)} / 6236`,'dlopen'):'')+
-    rowBtn('download',t('qDownload'),QX.dl!=null?`${fmtNum(QX.dl)}/114`:(S.quran.offline?t('qSaved'):null),'qdownload')+
-    `<div class="row"><span class="ri">${ic('font')}</span><span class="rt">${t('qFont')}</span><div class="stepper"><button data-act="qfont:-2" aria-label="-">−</button><span>${S.quran.font}</span><button data-act="qfont:2" aria-label="+">+</button></div></div>`+
-    `<div class="rowtext">${t('qAttr')}</div>`;
+    (NATIVE?rowSw('sound',t('qBgPlay'),S.quran.bg,'qbg'):'')+
+    `<div class="row"><span class="ri">${ic('font')}</span><span class="rt">${t('qFont')}</span><div class="stepper"><button data-act="qfont:-2" aria-label="-">−</button><span>${S.quran.font}</span><button data-act="qfont:2" aria-label="+">+</button></div></div>`;
 }
 
 /* ===== Actions (single delegated handler) ===== */
@@ -1470,7 +1483,8 @@ function act(a){
     case 'city': S.loc={...CITIES[+x]}; closeSheet(); afterLoc(); return;
     case 'gps': return detectGPS();
     case 'method': S.method=x; closeSheet(); break;
-    case 'asr': S.asr=x; closeSheet(); break;
+    case 'asrt': return toggleAsr(x);
+    case 'qbg': S.quran.bg=!S.quran.bg; nat('setBgPlay',S.quran.bg); break;
     case 'highlat': S.highLat=x; closeSheet(); break;
     case 'hijri': S.hijriOffset=+x; closeSheet(); break;
     case 'pre': S.preMin=+x; closeSheet(); break;
@@ -1655,6 +1669,7 @@ document.addEventListener('input',e=>{
 
 /* ===== Boot ===== */
 refreshDl();
+nat('setBgPlay',!!S.quran.bg);
 recalc();
 render();
 if(!needsPerm()) startOrient();

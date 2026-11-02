@@ -7,7 +7,11 @@
     <string name="ch_service">فقاعة الأذكار</string>
     <string name="ch_service_desc">تُظهر فقاعة الأذكار بعد فتح القفل</string>
     <string name="ch_downloads">تحميل التلاوات</string>
+    <string name="ch_playback">تشغيل التلاوة</string>
+    <string name="play_text">التلاوة تعمل في الخلفية</string>
+    <string name="play_stop">إيقاف</string>
     <string name="service_text">فقاعة الأذكار مفعّلة</string>
+    <string name="service_stop">إيقاف</string>
     <string name="dhikr_title">ذكر الآن</string>
     <string name="dhikr_close">اضغط للإغلاق</string>
 

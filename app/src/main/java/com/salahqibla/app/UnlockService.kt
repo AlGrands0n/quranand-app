@@ -1,6 +1,6 @@
 package com.salahqibla.app
 
-import android.app.Notification
+import android.app.PendingIntent
 import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -20,60 +20,101 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.app.NotificationCompat
 import kotlin.math.abs
 
 /**
- * Keeps a small adhkar bubble that appears over other apps every time the phone is unlocked.
- * Tapping the bubble shows one dhikr card and removes the bubble until the next unlock.
+ * After every unlock, slides a dhikr message in from the screen edge with a small bubble beside it.
+ * Tapping either one dismisses the pair. Both are removed when the screen turns off.
  */
 class UnlockService : Service() {
 
     private val ui = Handler(Looper.getMainLooper())
     private val wm by lazy { getSystemService(WINDOW_SERVICE) as WindowManager }
-    private var bubble: View? = null
-    private var card: View? = null
+    private var dock: View? = null
 
-    private val unlockReceiver = object : BroadcastReceiver() {
+    private val screenReceiver = object : BroadcastReceiver() {
         override fun onReceive(c: Context, i: Intent) {
-            if (i.action == Intent.ACTION_USER_PRESENT) showBubble()
+            when (i.action) {
+                Intent.ACTION_USER_PRESENT -> showDock()
+                Intent.ACTION_SCREEN_OFF -> removeDock()
+            }
         }
     }
 
     override fun onCreate() {
         super.onCreate()
         PrayerScheduler.ensureChannels(this)
-        val notification: Notification = NotificationCompat.Builder(this, PrayerScheduler.CH_SERVICE)
+
+        // A foreground service must show a notification. This one is as quiet as the system allows:
+        // minimum importance (no status-bar icon), hidden on the lock screen, one stop action.
+        val stop = PendingIntent.getService(
+            this, 3,
+            Intent(this, UnlockService::class.java).setAction(ACTION_STOP),
+            PendingIntent.FLAG_IMMUTABLE
+        )
+        val notification = NotificationCompat.Builder(this, PrayerScheduler.CH_SERVICE)
             .setSmallIcon(R.drawable.ic_stat_miqat)
             .setContentTitle(getString(R.string.app_name))
             .setContentText(getString(R.string.service_text))
             .setPriority(NotificationCompat.PRIORITY_MIN)
+            .setVisibility(NotificationCompat.VISIBILITY_SECRET)
             .setOngoing(true)
             .setSilent(true)
+            .addAction(0, getString(R.string.service_stop), stop)
             .build()
         startForeground(NOTIF_ID, notification)
-        registerReceiver(unlockReceiver, IntentFilter(Intent.ACTION_USER_PRESENT))
+
+        val filter = IntentFilter().apply {
+            addAction(Intent.ACTION_USER_PRESENT)
+            addAction(Intent.ACTION_SCREEN_OFF)
+        }
+        registerReceiver(screenReceiver, filter)
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int = START_STICKY
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == ACTION_STOP) {
+            PrayerScheduler.setBubbleEnabled(this, false)
+            stopSelf()
+            return START_NOT_STICKY
+        }
+        return START_STICKY
+    }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onDestroy() {
-        try { unregisterReceiver(unlockReceiver) } catch (_: Exception) { }
-        removeView(bubble); bubble = null
-        removeView(card); card = null
+        try { unregisterReceiver(screenReceiver) } catch (_: Exception) { }
+        removeDock()
         super.onDestroy()
     }
 
     private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()
 
-    private fun showBubble() {
-        if (bubble != null || !Settings.canDrawOverlays(this)) return
+    private fun currentDhikr(): String {
+        val morning = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY) < 12
+        val list = resources.getStringArray(if (morning) R.array.dhikr_morning else R.array.dhikr_evening)
+        return list[((System.currentTimeMillis() / 60_000) % list.size).toInt()]
+    }
 
-        val icon = ImageView(this).apply {
+    private fun showDock() {
+        if (dock != null || !Settings.canDrawOverlays(this)) return
+
+        val message = TextView(this).apply {
+            text = currentDhikr()
+            textSize = 16f
+            setLineSpacing(0f, 1.45f)
+            setTextColor(Color.parseColor("#f1f7f5"))
+            maxWidth = dp(250)
+            setPadding(dp(16), dp(12), dp(16), dp(12))
+            background = GradientDrawable().apply {
+                cornerRadius = dp(18).toFloat()
+                setColor(Color.parseColor("#F20E2723"))
+                setStroke(dp(1), Color.parseColor("#33FFFFFF"))
+            }
+        }
+        val bubble = ImageView(this).apply {
             setImageResource(R.drawable.ic_stat_miqat)
             setColorFilter(Color.parseColor("#0f463e"))
             setPadding(dp(13), dp(13), dp(13), dp(13))
@@ -85,24 +126,42 @@ class UnlockService : Service() {
             elevation = dp(6).toFloat()
         }
 
+        // Absolute gravity (LEFT/RIGHT, not START/END) keeps the same layout in Arabic and English:
+        // the bubble always sits on the right edge, the message to its left.
+        val root = FrameLayout(this).apply {
+            addView(
+                message,
+                FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                    Gravity.LEFT or Gravity.CENTER_VERTICAL
+                ).apply { rightMargin = dp(64) }
+            )
+            addView(
+                bubble,
+                FrameLayout.LayoutParams(dp(54), dp(54), Gravity.RIGHT or Gravity.CENTER_VERTICAL)
+            )
+        }
+
         val params = WindowManager.LayoutParams(
-            dp(54), dp(54),
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             PixelFormat.TRANSLUCENT
         ).apply {
-            gravity = Gravity.TOP or Gravity.END
-            x = dp(12)
+            gravity = Gravity.TOP or Gravity.RIGHT
+            x = dp(8)
             y = dp(220)
         }
 
-        // Drag to move; a short tap opens the dhikr card.
+        // Children are not clickable, so every touch reaches the root. A short tap dismisses; a drag moves it.
         var downX = 0f
         var downY = 0f
         var startX = 0
         var startY = 0
         var moved = false
-        icon.setOnTouchListener { view: View, e: MotionEvent ->
+        root.setOnTouchListener { _, e ->
             when (e.action) {
                 MotionEvent.ACTION_DOWN -> {
                     downX = e.rawX; downY = e.rawY
@@ -113,93 +172,52 @@ class UnlockService : Service() {
                 MotionEvent.ACTION_MOVE -> {
                     val dx = e.rawX - downX
                     val dy = e.rawY - downY
-                    if (abs(dx) > dp(6) || abs(dy) > dp(6)) moved = true
-                    params.x = startX - dx.toInt()   // gravity END: x grows to the left
+                    if (abs(dx) > dp(8) || abs(dy) > dp(8)) moved = true
+                    params.x = startX - dx.toInt()   // gravity RIGHT: x is measured leftwards from the edge
                     params.y = startY + dy.toInt()
-                    wm.updateViewLayout(view, params)
+                    try { wm.updateViewLayout(root, params) } catch (_: Exception) { }
                     true
                 }
                 MotionEvent.ACTION_UP -> {
-                    if (!moved) openDhikr()
+                    if (!moved) dismiss()
                     true
                 }
-                else -> false
+                else -> true
             }
         }
 
+        root.alpha = 0f
+        root.translationX = dp(160).toFloat()
         try {
-            wm.addView(icon, params)
-            bubble = icon
+            wm.addView(root, params)
+            dock = root
+            root.animate().alpha(1f).translationX(0f).setDuration(320).start()
         } catch (_: Exception) { }
     }
 
-    private fun openDhikr() {
-        removeView(bubble); bubble = null
-        if (card != null) return
-
-        val morning = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY) < 12
-        val list = resources.getStringArray(if (morning) R.array.dhikr_morning else R.array.dhikr_evening)
-        val text = list[((System.currentTimeMillis() / 60_000) % list.size).toInt()]
-
-        val title = TextView(this).apply {
-            setText(R.string.dhikr_title)
-            textSize = 13f
-            setTextColor(Color.parseColor("#d4af37"))
-            gravity = Gravity.CENTER
-            setTypeface(typeface, android.graphics.Typeface.BOLD)
-        }
-        val body = TextView(this).apply {
-            this.text = text
-            textSize = 19f
-            setLineSpacing(0f, 1.5f)
-            setTextColor(Color.parseColor("#f1f7f5"))
-            gravity = Gravity.CENTER
-        }
-        val hint = TextView(this).apply {
-            setText(R.string.dhikr_close)
-            textSize = 12f
-            setTextColor(Color.parseColor("#93aea8"))
-            gravity = Gravity.CENTER
-        }
-        val box = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(22), dp(20), dp(22), dp(16))
-            background = GradientDrawable().apply {
-                cornerRadius = dp(22).toFloat()
-                setColor(Color.parseColor("#F20E2723"))
-                setStroke(dp(1), Color.parseColor("#22FFFFFF"))
-            }
-            addView(title)
-            addView(body, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(12) })
-            addView(hint, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(16) })
-            setOnClickListener { removeView(card); card = null }
-        }
-        val frame = FrameLayout(this).apply {
-            setPadding(dp(16), 0, dp(16), 0)
-            addView(box, FrameLayout.LayoutParams(-1, -2, Gravity.CENTER))
-        }
-        val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            PixelFormat.TRANSLUCENT
-        ).apply { gravity = Gravity.CENTER }
-
-        try {
-            wm.addView(frame, params)
-            card = frame
-            ui.postDelayed({ removeView(card); card = null }, 25_000)
-        } catch (_: Exception) { }
+    private fun dismiss() {
+        val v = dock ?: return
+        v.animate()
+            .alpha(0f)
+            .translationX(dp(160).toFloat())
+            .setDuration(220)
+            .withEndAction { removeView(v) }
+            .start()
+        ui.postDelayed({ removeView(v) }, 400)   // safety net if the animation is interrupted
     }
 
-    private fun removeView(v: View?) {
-        if (v == null) return
+    private fun removeDock() {
+        dock?.let { removeView(it) }
+    }
+
+    private fun removeView(v: View) {
+        if (dock === v) dock = null
         try { wm.removeView(v) } catch (_: Exception) { }
     }
 
     companion object {
         private const val NOTIF_ID = 4417
+        const val ACTION_STOP = "com.miqat.app.BUBBLE_STOP"
 
         fun start(ctx: Context) {
             val i = Intent(ctx, UnlockService::class.java)

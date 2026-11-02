@@ -71,4 +71,26 @@ class NativeBridge(private val activity: MainActivity, private val webView: WebV
     fun deleteAudio(reciter: String) {
         AudioStore.delete(activity, reciter)
     }
+
+    /** Called by the page when a recitation starts or stops. Starts the playback service only if enabled. */
+    @JavascriptInterface
+    fun setPlaying(on: Boolean) {
+        PlaybackControl.playing = on
+        if (on && PrayerScheduler.bgPlayEnabled(activity)) {
+            try { PlaybackService.start(activity) } catch (_: Exception) { }
+        } else {
+            PlaybackService.stop(activity)
+        }
+    }
+
+    /** The "keep reciting in the background" switch in the Quran settings. */
+    @JavascriptInterface
+    fun setBgPlay(on: Boolean) {
+        PrayerScheduler.setBgPlayEnabled(activity, on)
+        if (on && PlaybackControl.playing) {
+            try { PlaybackService.start(activity) } catch (_: Exception) { }
+        } else if (!on) {
+            PlaybackService.stop(activity)
+        }
+    }
 }

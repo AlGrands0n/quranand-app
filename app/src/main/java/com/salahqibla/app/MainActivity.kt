@@ -82,13 +82,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // The system splash stays until the page is ready, then the page fades in over it.
         splash.setKeepOnScreenCondition { !pageReady }
-        ui.postDelayed({ pageReady = true }, 4_000)
+        ui.postDelayed({ revealPage() }, 3_000)
 
         PrayerScheduler.ensureChannels(this)
         webView = findViewById(R.id.webview)
         adView = findViewById(R.id.adView)
         webView.setBackgroundColor(0xFF081B19.toInt())
+        webView.alpha = 0f
+        PlaybackControl.requestPause = { webView.evaluateJavascript("window.__qpause&&window.__qpause()", null) }
 
         MobileAds.initialize(this) {}
         adView.loadAd(AdRequest.Builder().build())
@@ -113,8 +116,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onPageFinished(view: WebView, url: String?) {
-                pageReady = true
-                view.evaluateJavascript(NATIVE_JS, null)
+                view.evaluateJavascript(NATIVE_JS) { revealPage() }
             }
         }
 
@@ -163,8 +165,16 @@ class MainActivity : AppCompatActivity() {
         ui.post { webView.evaluateJavascript("window.__onPerm&&window.__onPerm()", null) }
     }
 
+    /** Fades the page in once. The system splash hands off at the same moment. */
+    private fun revealPage() {
+        if (pageReady) return
+        pageReady = true
+        webView.animate().alpha(1f).setDuration(260).start()
+    }
+
     override fun onPause() {
-        webView.onPause()
+        // Keep the WebView running while a recitation plays in the background (if the user enabled it).
+        if (!(PlaybackControl.playing && PrayerScheduler.bgPlayEnabled(this))) webView.onPause()
         adView.pause()
         super.onPause()
     }
@@ -178,6 +188,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        ui.removeCallbacksAndMessages(null)
+        PlaybackControl.requestPause = null
         adView.destroy()
         webView.destroy()
         super.onDestroy()
@@ -195,6 +207,9 @@ class MainActivity : AppCompatActivity() {
                 s.textContent = '.native .banner{display:none!important}';
                 document.head.appendChild(s);
               }
+              window.__qpause = function () {
+                if (typeof QX !== 'undefined' && QX.el && !QX.el.paused) QX.el.pause();
+              };
               window.__androidBack = function () {
                 if (document.querySelector('.sheet')) { act('closeSheet'); return true; }
                 if (document.querySelector('.mwrap')) { act('close'); return true; }
