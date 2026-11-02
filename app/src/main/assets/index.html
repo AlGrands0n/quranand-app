@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#081b19">
-<title>مواقيت الصلاة والقبلة</title>
+<title>ميقات</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{--bg:#081b19;--bg2:#0e2723;--card:rgba(255,255,255,.055);--line:rgba(255,255,255,.09);--text:#f1f7f5;--muted:#93aea8;--accent:#34d399;--gold:#d4af37;--nav:rgba(7,24,21,.94);--shadow:0 12px 32px rgba(0,0,0,.35);--r:20px;--font:'Tajawal','Segoe UI',Tahoma,sans-serif}
@@ -51,7 +51,7 @@ svg{flex:none}
 .ptime{font-weight:800;font-size:18px;font-variant-numeric:tabular-nums;direction:ltr}
 .badge{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--accent);color:#04211c;font-weight:800}
 .tk{color:var(--accent);min-width:18px;display:inline-flex}
-.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
 .act{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 6px;border-radius:18px;background:var(--card);border:1px solid var(--line);font-size:13px;font-weight:700}
 .act svg{color:var(--accent)}
 .banner{margin-top:18px;border:1px dashed var(--line);border-radius:14px;padding:12px;text-align:center;color:var(--muted);font-size:13px;background:var(--card)}
@@ -203,9 +203,28 @@ button.row:active{background:rgba(127,127,127,.08)}
 .v-num{width:32px;height:32px;border-radius:11px;display:grid;place-items:center;background:var(--bg);border:1px solid var(--line);font-size:13px;font-weight:800;color:var(--accent);direction:ltr}
 .verse.on .v-num{background:var(--accent);color:#04211c;border-color:transparent}
 .basmala{text-align:center;font-family:'Amiri',serif;font-size:26px;color:var(--gold);padding:20px 12px 8px}
+#boot{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(120% 80% at 50% 0%,#0f463e,#081b19 70%);color:#f3fbf8;transition:opacity .4s ease,visibility .4s}
+#boot.gone{opacity:0;visibility:hidden}
+.boot-mark{animation:bootIn .9s cubic-bezier(.2,.8,.2,1) both}
+.boot-name{font-size:32px;font-weight:800;letter-spacing:.5px;animation:bootIn .9s .15s cubic-bezier(.2,.8,.2,1) both}
+.boot-bar{width:120px;height:3px;border-radius:9px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:6px}
+.boot-bar span{display:block;width:40%;height:100%;border-radius:9px;background:linear-gradient(90deg,#d4af37,#fde68a);animation:bootSlide 1.2s ease-in-out infinite}
+@keyframes bootIn{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes bootSlide{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
+.page{animation:fadeUp .4s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.v-top{justify-content:space-between}
+.v-dl{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.v-dl.done{color:var(--accent);border-color:transparent;background:rgba(52,211,153,.13)}
+.dl-actions{display:grid;grid-template-columns:1fr 1.4fr auto;gap:8px;margin:12px 0 14px}
+.dl-actions button{padding:11px 14px;justify-content:center}
+.dlt{height:6px;margin:0 2px 4px}
+.chk-box{width:24px;height:24px;border-radius:8px;border:1.5px solid var(--line);display:grid;place-items:center;flex:none;color:#04211c}
+.chk-box.on{background:var(--accent);border-color:transparent}
 </style>
 </head>
 <body>
+<div id="boot" aria-hidden="true"><div class="boot-mark"><svg viewBox="0 0 108 108" width="88" height="88" aria-hidden="true"><circle cx="54" cy="54" r="24" fill="#d4af37"/><circle cx="63" cy="50" r="20" fill="#0f463e"/></svg></div><div class="boot-name">ميقات</div><div class="boot-bar"><span></span></div></div>
 <main class="app" id="app"></main>
 <div id="sheet-root"></div>
 <div id="modal-root"></div>
@@ -361,7 +380,7 @@ const ic=(n,s=20)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="no
 /* ===== Translations ===== */
 const T={
 ar:{
-  app:'مواقيت الصلاة والقبلة',home:'الرئيسية',qibla:'القبلة',calendar:'التقويم',dhikr:'الذكر',settings:'الإعدادات',
+  app:'ميقات',home:'الرئيسية',qibla:'القبلة',calendar:'التقويم',dhikr:'الذكر',settings:'الإعدادات',
   fajr:'الفجر',sunrise:'الشروق',dhuhr:'الظهر',asr:'العصر',maghrib:'المغرب',isha:'العشاء',
   nextPrayer:'الصلاة القادمة',nextBadge:'التالية',tomorrow:'غداً',remaining:'الوقت المتبقي',todayTimes:'مواقيت اليوم',
   share:'مشاركة',shareText:'مواقيت الصلاة',copied:'تم نسخ المواقيت',located:'تم تحديد موقعك',
@@ -390,7 +409,7 @@ ar:{
   tapHint:'اضغط الدائرة للتسبيح',target:'الهدف',completed:'اكتمل الهدف ✓',done:'تم الذكر، بارك الله فيك',date:'اليوم'
 },
 en:{
-  app:'Prayer Times & Qibla',home:'Home',qibla:'Qibla',calendar:'Calendar',dhikr:'Dhikr',settings:'Settings',
+  app:'Miqat',home:'Home',qibla:'Qibla',calendar:'Calendar',dhikr:'Dhikr',settings:'Settings',
   fajr:'Fajr',sunrise:'Sunrise',dhuhr:'Dhuhr',asr:'Asr',maghrib:'Maghrib',isha:'Isha',
   nextPrayer:'Next prayer',nextBadge:'Next',tomorrow:'Tomorrow',remaining:'Time remaining',todayTimes:'Today’s times',
   share:'Share',shareText:'Prayer times',copied:'Times copied',located:'Location detected',
@@ -426,7 +445,7 @@ const DEFAULT={
   lang:'ar',theme:'dark',accent:'emerald',hour12:false,tab:'home',
   loc:{...CITIES[0]},method:'mwl',custom:{fajr:18,isha:17},asr:'standard',highLat:'angle',hijriOffset:0,
   offsets:{fajr:0,sunrise:0,dhuhr:0,asr:0,maghrib:0,isha:0},
-  notify:false,preMin:10,suhoor:true,
+  notify:false,preMin:10,suhoor:true,bubble:false,
   consent:null,unlockedGold:false,
   tas:{dhikr:0,target:33,counts:[0,0,0,0,0,0,0],sound:true},
   dhikrSub:'tasbeeh',adhList:'morning',adhDay:'',
@@ -638,13 +657,18 @@ function applyTheme(){
   const m=document.querySelector('meta[name="theme-color"]');
   if(m) m.content=S.theme==='light'?'#f1f7f5':'#081b19';
 }
+let lastTab=null;
 function render(){
   applyTheme();
   const y=window.scrollY;
+  const fresh=lastTab!==S.tab; lastTab=S.tab;
   const body={home:screenHome,qibla:screenQibla,quran:screenQuranRouter,calendar:screenCalendar,dhikr:screenDhikr,settings:screenSettings}[S.tab]();
-  $('#app').innerHTML=body+banner()+nav();
+  $('#app').innerHTML=`<div class="${fresh?'page':''}">${body}${banner()}</div>`+nav();
   if(S.tab==='qibla') updateCompassEl();
   window.scrollTo(0,y);
+  const b=document.getElementById('boot');
+  if(b&&!b.classList.contains('gone')){ b.classList.add('gone'); setTimeout(()=>b.remove(),450); }
+  syncNative();
 }
 
 /* ===== Home ===== */
@@ -678,7 +702,6 @@ function screenHome(){
   <div class="card glist">${rows}</div>
   ${dailyCard()}
   <div class="actions">
-    <button class="act" data-act="share">${ic('share',22)}<span>${t('share')}</span></button>
     <button class="act" data-act="tab:qibla">${ic('compass',22)}<span>${t('qibla')}</span></button>
     <button class="act" data-act="tab:calendar">${ic('cal',22)}<span>${t('calendar')}</span></button>
   </div>`;
@@ -915,8 +938,10 @@ function screenSettings(){
   ${group(t('secAdjust'),offRows)}
   ${group(t('secNotif'),
     rowSw('bell',t('notifications'),S.notify,'notify')+
+    (NATIVE?rowBtn('bell',t('notifPerm'),nat('notificationsGranted')?t('granted'):t('askPerm'),'notifreq'):'')+
     rowBtn('clock',t('preAlarm'),preLabel(),'open:pre')+
-    rowSw('moon',t('suhoorAlert'),S.suhoor,'suhoor'))}
+    rowSw('moon',t('suhoorAlert'),S.suhoor,'suhoor')+
+    (NATIVE?rowSw('sun',t('bubbleOn'),S.bubble,'bubble'):''))}
   ${group(t('secAppear'),
     rowSeg('globe',t('language'),[['ar','عربي'],['en','English']],S.lang,'lang')+
     rowSeg('moon',t('theme'),[['dark',t('dark')],['light',t('light')]],S.theme,'theme')+
@@ -1009,9 +1034,38 @@ function watchAd(){
     }
   },1000);
 }
+/* ===== Native bridge (Android app; no-op in a browser) ===== */
+const NATIVE=typeof window.Android!=='undefined';
+Object.assign(T.ar,{inMinutes:'بعد',notifPerm:'صلاحية الإشعارات',granted:'مفعّلة',askPerm:'السماح',bubbleOn:'فقاعة الأذكار عند فتح القفل',overlayNeed:'فعّل «الظهور فوق التطبيقات» لميقات ثم أعد المحاولة',nativeOnly:'هذه الميزة متاحة في تطبيق أندرويد فقط'});
+Object.assign(T.en,{inMinutes:'in',notifPerm:'Notification permission',granted:'Allowed',askPerm:'Allow',bubbleOn:'Adhkar bubble on unlock',overlayNeed:'Enable “Display over other apps” for Miqat, then try again',nativeOnly:'This feature is available in the Android app only'});
+const nat=(fn,...a)=>{ try{ return NATIVE&&typeof Android[fn]==='function'?Android[fn](...a):undefined; }catch(e){ return undefined; } };
+let lastSync='';
+window.__onPerm=()=>{ lastSync=''; render(); };
+function syncNative(){
+  if(!NATIVE||!TODAY) return;
+  const now=Date.now(), items=[], pre=S.preMin;
+  if(S.notify){
+    for(let d=0; d<3; d++){
+      const day=ymd(new Date(now+d*864e5),S.loc.tz);
+      prayersFor(day).filter(p=>p.key!=='sunrise').forEach(p=>{
+        const at=p.date.getTime(), name=t(p.key), tm=fmtTime(p.date);
+        if(at<=now) return;
+        if(pre>0) items.push({id:Math.floor(at/6e4)*2+1,t:at-pre*6e4,title:`${name} ${t('inMinutes')} ${pre} ${t('minutes')}`,body:tm});
+        items.push({id:Math.floor(at/6e4)*2,t:at,title:`${t('adhanNow')} ${name}`,body:tm});
+      });
+    }
+    if(S.suhoor&&TODAY.ramadan&&TODAY.imsak.getTime()>now) items.push({id:900000001,t:TODAY.imsak.getTime(),title:t('imsakNow'),body:fmtTime(TODAY.imsak)});
+  }
+  const payload=JSON.stringify({enabled:S.notify,items});
+  if(payload===lastSync) return;
+  lastSync=payload;
+  nat('schedulePrayers',payload);
+}
 async function toggleNotify(){
   if(!S.notify){
-    if('Notification' in window){
+    if(NATIVE){
+      nat('requestNotifications');
+    }else if('Notification' in window){
       if(Notification.permission==='default'){
         try{ const r=await Notification.requestPermission(); if(r!=='granted') toast(t('permDenied')); }catch(e){}
       }else if(Notification.permission==='denied') toast(t('permDenied'));
@@ -1022,6 +1076,15 @@ async function toggleNotify(){
     S.notify=false;
     toast(t('notifOff'));
   }
+  save();
+  render();
+}
+function toggleBubble(){
+  if(!NATIVE){ toast(t('nativeOnly')); return; }
+  const want=!S.bubble;
+  const r=nat('setBubble',want);
+  if(want&&r!=='ok') toast(t('overlayNeed'));
+  else S.bubble=want;
   save();
   render();
 }
@@ -1252,7 +1315,7 @@ function setMediaSession(){
 }
 function startAyah(n,i,d){
   QX.busy=false; QX.cur=n; QX.data=d; QX.idx=i;
-  const url=d.audio&&d.audio[i];
+  const url=ayahSrc(n,i,d.audio&&d.audio[i]);
   if(!url){ qAudio().pause(); toast(d.audio?t('qNoAudio'):t('qNeedNet')); render(); return; }
   S.quran.last={s:n,a:i+1}; save();
   const el=qAudio();
@@ -1344,13 +1407,14 @@ function screenSurah(n){
       <button class="ib" data-act="qback" aria-label="${t('qBack')}">${ic(S.lang==='ar'?'chevR':'chevL',18)}</button>
       <div class="qh-t"><div class="brand">${S.lang==='ar'?m.ar:m.en}</div><div class="muted">${sub}</div></div>
       <button class="btn-ghost qplay-all" data-act="qplaysurah:${n}">${ic('play',16)}<span>${t('qPlayAll')}</span></button>
+      ${NATIVE?`<button class="ib" data-act="qdlsurah:${n}" aria-label="${t('qDlSurah')}">${ic('download',18)}</button>`:''}
     </header>`;
   const basmala=(n!==1&&n!==9)?`<div class="basmala">${t('qBasmala')}</div>`:'';
   const verses=d.ar.map((a,i)=>{
     const on=QX.cur===n&&QX.idx===i;
     const en=S.quran.en&&d.en[i]?`<div class="v-en">${esc(d.en[i].text)}</div>`:'';
     return `<article class="verse${on?' on':''}" data-act="qplay:${n}:${i}">
-      <div class="v-top"><span class="v-num">${fmtNum(i+1)}</span></div>
+      <div class="v-top"><span class="v-num">${fmtNum(i+1)}</span>${NATIVE?`<button class="v-dl${isDl(n,i)?' done':''}" data-act="qdl:${n}:${i}" aria-label="${t('qDlAyah')}">${ic(isDl(n,i)?'check':'download',18)}</button>`:''}</div>
       <div class="v-ar" style="font-size:${S.quran.font}px">${a.text}</div>${en}</article>`;
   }).join('');
   return `${head}${playerHTML()}${basmala}<section class="card glist vlist">${verses}</section>`;
@@ -1387,6 +1451,7 @@ function quranRows(){
   const rec=RECITERS.find(r=>r.id===S.quran.reciter)||RECITERS[0];
   return rowBtn('book',t('qReciter'),rec[S.lang],'qreciter')+
     rowSw('doc',t('qShowEn'),S.quran.en,'qen')+
+    (NATIVE?rowBtn('download',t('qAudioMgr'),`${fmtNum(QX.dlSet.size)} / 6236`,'dlopen'):'')+
     rowBtn('download',t('qDownload'),QX.dl!=null?`${fmtNum(QX.dl)}/114`:(S.quran.offline?t('qSaved'):null),'qdownload')+
     `<div class="row"><span class="ri">${ic('font')}</span><span class="rt">${t('qFont')}</span><div class="stepper"><button data-act="qfont:-2" aria-label="-">−</button><span>${S.quran.font}</span><button data-act="qfont:2" aria-label="+">+</button></div></div>`+
     `<div class="rowtext">${t('qAttr')}</div>`;
@@ -1418,6 +1483,8 @@ function act(a){
       if(x==='gold'&&!S.unlockedGold) return watchAd();
       S.accent=x; break;
     case 'notify': return toggleNotify();
+    case 'notifreq': nat('requestNotifications'); return;
+    case 'bubble': return toggleBubble();
     case 'suhoor': S.suhoor=!S.suhoor; break;
     case 'consentReopen': return openConsent();
     case 'consent': S.consent=x==='yes'?'personalized':'non-personalized'; closeModal(); break;
@@ -1447,6 +1514,13 @@ function act(a){
     case 'qreciter': return openQReciter();
     case 'qrec': S.quran.reciter=x; closeSheet(); break;
     case 'qdownload': return downloadQuran();
+    case 'qdl': return dlSingle(+x,+y);
+    case 'qdlsurah': return dlStart([+x]);
+    case 'dlopen': return openDownloads();
+    case 'dlsel': QX.sel.has(+x)?QX.sel.delete(+x):QX.sel.add(+x); return paintDl();
+    case 'dlall': if(QX.sel.size===QX.index.length) QX.sel.clear(); else QX.index.forEach(s=>QX.sel.add(s.n)); return paintDl();
+    case 'dlgo': return dlStart([...QX.sel].sort((a,b)=>a-b));
+    case 'dlrm': return deleteDownloads();
     case 'qen': S.quran.en=!S.quran.en; break;
     case 'qfont': S.quran.font=clamp(S.quran.font+ +x,18,40); break;
     default: return;
@@ -1454,6 +1528,117 @@ function act(a){
   if(RECALC.has(cmd)) recalc();
   save();
   render();
+}
+
+/* ===== Audio downloads (Android app) ===== */
+const AUDIO_HOST='https://appassets.androidplatform.net/audio/';
+QX.dlSet=new Set(); QX.dlp=null; QX.sel=new Set();
+ICONS.trash='<path d="M4.5 6.5h15M9.5 6.5V4.5h5v2M6.5 6.5l1 13h9l1-13"/>';
+Object.assign(T.ar,{qAudioMgr:'تلاوات بدون إنترنت',qDlTitle:'تحميل التلاوات',qDlAll:'تحديد الكل',qDlGo:'تحميل المحدد',qDlDelete:'حذف',qDlNote:'تُحفظ التلاوات على جهازك للاستماع بدون إنترنت، وكل سورة تقارب عدة ميغابايت. التلاوات ملك لأصحابها ويُشترط الإسناد إليهم.',qDlPrep:'جارٍ تجهيز الملفات…',qDlProg:'تم تحميل',qDlFailed:'فشل',qDlHave:'محمّلة',qDlDone:'اكتمل التحميل ✓',qDlPartial:'اكتمل التحميل مع بعض الأخطاء',qDlNothing:'كل ما اخترته محمّل بالفعل',qDlFail:'تعذّر بدء التحميل',qDlBusy:'يوجد تحميل قيد التنفيذ',qDlStarted:'بدأ تحميل الآية',qDlAyah:'تحميل الآية',qDlSurah:'تحميل السورة',qDlDeleted:'تم حذف التلاوات المحمّلة'});
+Object.assign(T.en,{qAudioMgr:'Offline recitations',qDlTitle:'Download recitations',qDlAll:'Select all',qDlGo:'Download selected',qDlDelete:'Delete',qDlNote:'Recitations are saved on your device for offline listening. Each surah is several megabytes. Recitations belong to their reciters, and attribution applies.',qDlPrep:'Preparing files…',qDlProg:'Downloaded',qDlFailed:'Failed',qDlHave:'Saved',qDlDone:'Download complete ✓',qDlPartial:'Download finished with some errors',qDlNothing:'Everything selected is already saved',qDlFail:'Could not start the download',qDlBusy:'A download is already running',qDlStarted:'Ayah download started',qDlAyah:'Download ayah',qDlSurah:'Download surah',qDlDeleted:'Downloaded recitations deleted'});
+function surahOffset(n){ let s=0; for(let k=0;k<n-1;k++) s+=QX.index[k].count; return s; }
+const gOf=(n,i)=>surahOffset(n)+i+1;
+function refreshDl(){
+  const raw=NATIVE?(nat('downloadedIds',S.quran.reciter)||''):'';
+  QX.dlSet=new Set(raw?raw.split(',').map(Number):[]);
+}
+function isDl(n,i){ return !!(QX.index&&QX.dlSet.has(gOf(n,i))); }
+function ayahSrc(n,i,remote){
+  if(isDl(n,i)) return AUDIO_HOST+S.quran.reciter+'/'+gOf(n,i)+'.mp3';
+  return remote;
+}
+function surahDlCount(n){
+  const o=surahOffset(n), k=QX.index[n-1].count; let c=0;
+  for(let i=1;i<=k;i++) if(QX.dlSet.has(o+i)) c++;
+  return c;
+}
+async function audioListFor(n){
+  const key=n+'|'+S.quran.reciter;
+  return QX.audio.get(key)||loadAudio(n,S.quran.reciter);
+}
+async function dlStart(surahs){
+  if(!NATIVE){ toast(t('nativeOnly')); return; }
+  if(QX.dlp){ toast(t('qDlBusy')); return; }
+  QX.dlp={done:0,total:0,failed:0,prep:true}; paintDl();
+  const items=[]; let failed=0;
+  for(const n of surahs){
+    const urls=await audioListFor(n);
+    if(!urls){ failed++; continue; }
+    const o=surahOffset(n);
+    urls.forEach((u,i)=>{ if(u&&!QX.dlSet.has(o+i+1)) items.push({g:o+i+1,url:u}); });
+  }
+  if(!items.length){
+    QX.dlp=null; paintDl();
+    toast(failed===surahs.length?t('qOffline'):t('qDlNothing'));
+    return;
+  }
+  QX.dlp={done:0,total:items.length,failed:0};
+  paintDl();
+  const ok=nat('downloadAyahs',S.quran.reciter,JSON.stringify(items));
+  if(!ok){ QX.dlp=null; paintDl(); toast(t('qDlFail')); }
+}
+async function dlSingle(n,i){
+  if(!NATIVE){ toast(t('nativeOnly')); return; }
+  if(QX.dlp){ toast(t('qDlBusy')); return; }
+  if(isDl(n,i)){ toast(t('qDlHave')); return; }
+  const urls=await audioListFor(n);
+  const u=urls&&urls[i];
+  if(!u){ toast(t('qNeedNet')); return; }
+  QX.dlp={done:0,total:1,failed:0};
+  const ok=nat('downloadAyahs',S.quran.reciter,JSON.stringify([{g:gOf(n,i),url:u}]));
+  if(!ok){ QX.dlp=null; toast(t('qDlFail')); return; }
+  toast(t('qDlStarted'));
+  render();
+}
+function deleteDownloads(){
+  if(!NATIVE) return;
+  if(QX.dlp){ toast(t('qDlBusy')); return; }
+  nat('deleteAudio',S.quran.reciter);
+  refreshDl(); toast(t('qDlDeleted')); paintDl(); render();
+}
+/* Called by the native downloader: done, total, failed, finished */
+window.__dl=(done,total,failed,fin)=>{
+  if(fin){
+    QX.dlp=null;
+    refreshDl();
+    toast(failed?t('qDlPartial'):t('qDlDone'));
+    render();
+  }else{
+    QX.dlp={done,total,failed};
+  }
+  paintDl();
+};
+function openDownloads(){
+  if(!NATIVE){ toast(t('nativeOnly')); return; }
+  refreshDl();
+  openSheet(`<div class="sh-title">${t('qDlTitle')}</div>
+    <div class="muted" id="dlprog"></div>
+    <div class="track dlt"><span id="dlbar"></span></div>
+    <div class="dl-actions">
+      <button class="btn-ghost" data-act="dlall">${t('qDlAll')}</button>
+      <button class="btn-pri" data-act="dlgo" id="dlgo">${t('qDlGo')}</button>
+      <button class="btn-ghost" data-act="dlrm" aria-label="${t('qDlDelete')}">${ic('trash',18)}</button>
+    </div>
+    <div class="card glist" id="dlbody"></div>
+    <p class="note">${t('qDlNote')}</p>`);
+  paintDl();
+}
+function paintDl(){
+  const body=$('#dlbody'); if(!body||!QX.index) return;
+  const p=QX.dlp, pct=p&&p.total?Math.round(p.done/p.total*100):0;
+  const prog=$('#dlprog');
+  if(prog) prog.textContent=p?(p.prep?t('qDlPrep'):`${t('qDlProg')} ${fmtNum(p.done)} / ${fmtNum(p.total)}${p.failed?` · ${t('qDlFailed')} ${fmtNum(p.failed)}`:''}`):'';
+  const bar=$('#dlbar'); if(bar) bar.style.width=pct+'%';
+  const go=$('#dlgo');
+  if(go){ go.disabled=!!p||!QX.sel.size; go.textContent=`${t('qDlGo')}${QX.sel.size?` (${fmtNum(QX.sel.size)})`:''}`; }
+  body.innerHTML=QX.index.map(x=>{
+    const have=surahDlCount(x.n), full=have>=x.count, on=QX.sel.has(x.n);
+    return `<button class="row" data-act="dlsel:${x.n}">
+      <span class="chk-box${on?' on':''}">${on?ic('check',14):''}</span>
+      <span class="rt">${S.lang==='ar'?x.ar:x.en}<small>${fmtNum(x.n)} · ${fmtNum(x.count)} ${t('qVerses')}</small></span>
+      <span class="rv">${full?t('qDlHave'):have?`${fmtNum(have)} / ${fmtNum(x.count)}`:''}</span>
+    </button>`;
+  }).join('');
 }
 
 /* ===== Global listeners ===== */
@@ -1469,6 +1654,7 @@ document.addEventListener('input',e=>{
 });
 
 /* ===== Boot ===== */
+refreshDl();
 recalc();
 render();
 if(!needsPerm()) startOrient();

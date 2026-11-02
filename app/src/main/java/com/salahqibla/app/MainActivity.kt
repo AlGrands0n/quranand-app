@@ -4,7 +4,10 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.webkit.GeolocationPermissions
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
@@ -15,28 +18,39 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.webkit.WebViewAssetLoader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
     private lateinit var adView: AdView
 
+    // The system splash stays up until the page has rendered (or after a short timeout).
+    @Volatile private var pageReady = false
+    private val ui = Handler(Looper.getMainLooper())
+
     private var pendingGeoOrigin: String? = null
     private var pendingGeoCallback: GeolocationPermissions.Callback? = null
 
-    // Serves the bundled app from https://appassets.androidplatform.net/assets/...
-    // so localStorage and IndexedDB work reliably (file:// origins do not).
+    // Serves bundled assets and downloaded audio from https://appassets.androidplatform.net/
+    // so localStorage, IndexedDB and media playback work with a proper origin.
     private val assetLoader by lazy {
         WebViewAssetLoader.Builder()
             .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(this))
+            .addPathHandler("/audio/", WebViewAssetLoader.InternalStoragePathHandler(this, File(filesDir, "audio")))
             .build()
     }
 
-    private val locationPermissionLauncher = registerForActivityResult(
+    private val notificationLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { notifyWebPermissionChanged() }
+
+    private val locationLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { result ->
         val granted = result[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
@@ -46,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         pendingGeoOrigin = null
     }
 
-    // Back button: first let the web app close sheets, modals and the Quran reader.
+    // Back button: let the web app close sheets, dialogs and the Quran reader first.
     private val backCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             webView.evaluateJavascript("(window.__androidBack && window.__androidBack()) === true") { handled ->
@@ -64,11 +78,17 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splash = installSplashScreen()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        splash.setKeepOnScreenCondition { !pageReady }
+        ui.postDelayed({ pageReady = true }, 4_000)
+
+        PrayerScheduler.ensureChannels(this)
         webView = findViewById(R.id.webview)
         adView = findViewById(R.id.adView)
+        webView.setBackgroundColor(0xFF081B19.toInt())
 
         MobileAds.initialize(this) {}
         adView.loadAd(AdRequest.Builder().build())
@@ -76,11 +96,11 @@ class MainActivity : AppCompatActivity() {
         webView.settings.apply {
             javaScriptEnabled = true
             domStorageEnabled = true
-            // Lets adhan/ayah audio start without a tap on every verse.
             mediaPlaybackRequiresUserGesture = false
             allowFileAccess = false
             allowContentAccess = false
         }
+        webView.addJavascriptInterface(NativeBridge(this, webView), "Android")
 
         webView.webViewClient = object : WebViewClient() {
             override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? =
@@ -93,6 +113,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onPageFinished(view: WebView, url: String?) {
+                pageReady = true
                 view.evaluateJavascript(NATIVE_JS, null)
             }
         }
@@ -113,14 +134,33 @@ class MainActivity : AppCompatActivity() {
                 }
                 pendingGeoOrigin = origin
                 pendingGeoCallback = callback
-                locationPermissionLauncher.launch(
+                locationLauncher.launch(
                     arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
                 )
             }
         }
 
         onBackPressedDispatcher.addCallback(this, backCallback)
+
+        // Keep the unlock bubble alive if the user turned it on earlier.
+        if (PrayerScheduler.bubbleEnabled(this) && android.provider.Settings.canDrawOverlays(this)) {
+            try { UnlockService.start(this) } catch (_: Exception) { }
+        }
+
         webView.loadUrl("https://appassets.androidplatform.net/assets/index.html")
+    }
+
+    /** Called by the bridge when the page asks for notification permission (Android 13+). */
+    fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= 33 && !PrayerScheduler.notificationsGranted(this)) {
+            ui.post { notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) }
+        } else {
+            notifyWebPermissionChanged()
+        }
+    }
+
+    private fun notifyWebPermissionChanged() {
+        ui.post { webView.evaluateJavascript("window.__onPerm&&window.__onPerm()", null) }
     }
 
     override fun onPause() {
@@ -133,6 +173,8 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         webView.onResume()
         adView.resume()
+        // The user may have just granted notifications or the overlay permission.
+        notifyWebPermissionChanged()
     }
 
     override fun onDestroy() {
@@ -142,8 +184,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        // Runs after the page loads: hides the web placeholder banner (the real
-        // AdMob banner is native, below the WebView) and defines the back handler.
+        // Runs after each page load: hides the web placeholder banner (the real AdMob banner is
+        // native, below the WebView) and defines the handler used by the back button.
         private const val NATIVE_JS = """
             (function () {
               document.documentElement.classList.add('native');

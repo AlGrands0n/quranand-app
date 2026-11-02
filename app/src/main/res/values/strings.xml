@@ -1,12 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">مواقيت الصلاة والقبلة</string>
+    <string name="app_name">ميقات</string>
+
+    <string name="ch_prayer">تنبيهات الصلاة</string>
+    <string name="ch_prayer_desc">تنبيه عند دخول وقت كل صلاة</string>
+    <string name="ch_service">فقاعة الأذكار</string>
+    <string name="ch_service_desc">تُظهر فقاعة الأذكار بعد فتح القفل</string>
+    <string name="ch_downloads">تحميل التلاوات</string>
+    <string name="service_text">فقاعة الأذكار مفعّلة</string>
+    <string name="dhikr_title">ذكر الآن</string>
+    <string name="dhikr_close">اضغط للإغلاق</string>
 
     <!--
-        Google's official TEST IDs. They are safe for development.
-        Before publishing, replace them with your own AdMob IDs
-        (AdMob console > Apps / Ad units). Never click your own ads.
+        Google's official TEST IDs. Safe for development.
+        Replace them with your own AdMob IDs before publishing.
+        Never click your own ads.
     -->
     <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
     <string name="admob_banner_id">ca-app-pub-3940256099942544/6300978111</string>
+
+    <string-array name="dhikr_morning">
+        <item>أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ</item>
+        <item>اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَإِلَيْكَ النُّشُورُ</item>
+        <item>سُبْحَانَ اللهِ وَبِحَمْدِهِ</item>
+        <item>أَسْتَغْفِرُ اللهَ وَأَتُوبُ إِلَيْهِ</item>
+        <item>لَا إِلَهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ</item>
+    </string-array>
+
+    <string-array name="dhikr_evening">
+        <item>أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ</item>
+        <item>اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَإِلَيْكَ الْمَصِيرُ</item>
+        <item>أَعُوذُ بِكَلِمَاتِ اللهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ</item>
+        <item>رَضِيتُ بِاللهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ نَبِيًّا</item>
+        <item>اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ</item>
+    </string-array>
 </resources>

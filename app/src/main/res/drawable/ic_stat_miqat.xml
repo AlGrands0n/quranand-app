@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Monochrome status-bar icon: Android tints it, so it must be a single colour. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M12,2.8a2.1,2.1 0 1,0 0.01,0z M18.4,6.6a2.1,2.1 0 1,0 0.01,0z M18.4,15.4a2.1,2.1 0 1,0 0.01,0z M12,19.2a2.1,2.1 0 1,0 0.01,0z M5.6,15.4a2.1,2.1 0 1,0 0.01,0z M5.6,6.6a2.1,2.1 0 1,0 0.01,0z" />
+</vector>

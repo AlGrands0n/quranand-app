@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.SalahQibla" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <!-- Shown by the system while the app starts. Hands off to Theme.Miqat once the page is ready. -->
+    <style name="Theme.Miqat.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#081b19</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.Miqat</item>
+        <item name="android:windowBackground">#081b19</item>
+    </style>
+
+    <style name="Theme.Miqat" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimary">#0f463e</item>
         <item name="colorPrimaryDark">#081b19</item>
         <item name="android:statusBarColor">#081b19</item>
+        <item name="android:navigationBarColor">#081b19</item>
         <item name="android:windowBackground">#081b19</item>
     </style>
 </resources>
