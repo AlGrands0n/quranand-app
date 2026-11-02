@@ -31,12 +31,12 @@ object PrayerScheduler {
     const val CH_DOWNLOADS = "downloads"
 
     private const val OLD_PRAYER_CHANNEL = "prayer"
-    private const val PREFS = "miqat"
+    private const val PREFS = "inaba"
     private const val KEY_PAYLOAD = "payload"
     private const val KEY_IDS = "scheduled"
     private const val KEY_BUBBLE = "bubble"
     private const val KEY_BGPLAY = "bgplay"
-    const val ACTION_PRAYER = "com.miqat.app.PRAYER"
+    const val ACTION_PRAYER = "com.inaba.app.PRAYER"
 
     private fun prefs(ctx: Context) = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 

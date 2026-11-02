@@ -217,7 +217,7 @@ class UnlockService : Service() {
 
     companion object {
         private const val NOTIF_ID = 4417
-        const val ACTION_STOP = "com.miqat.app.BUBBLE_STOP"
+        const val ACTION_STOP = "com.inaba.app.BUBBLE_STOP"
 
         fun start(ctx: Context) {
             val i = Intent(ctx, UnlockService::class.java)

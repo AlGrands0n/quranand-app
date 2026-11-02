@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ميقات</string>
+    <string name="app_name">إنابة</string>
 
     <string name="ch_prayer">تنبيهات الصلاة</string>
     <string name="ch_prayer_desc">تنبيه عند دخول وقت كل صلاة</string>

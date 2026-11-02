@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#081b19">
-<title>ميقات</title>
+<title>إنابة</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -371,7 +371,7 @@ const ic=(n,s=20)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="no
 /* ===== Translations ===== */
 const T={
 ar:{
-  app:'ميقات',home:'الرئيسية',qibla:'القبلة',calendar:'التقويم',dhikr:'الذكر',settings:'الإعدادات',
+  app:'إنابة',home:'الرئيسية',qibla:'القبلة',calendar:'التقويم',dhikr:'الذكر',settings:'الإعدادات',
   fajr:'الفجر',sunrise:'الشروق',dhuhr:'الظهر',asr:'العصر',maghrib:'المغرب',isha:'العشاء',
   nextPrayer:'الصلاة القادمة',nextBadge:'التالية',tomorrow:'غداً',remaining:'الوقت المتبقي',todayTimes:'مواقيت اليوم',
   share:'مشاركة',shareText:'مواقيت الصلاة',copied:'تم نسخ المواقيت',located:'تم تحديد موقعك',
@@ -400,7 +400,7 @@ ar:{
   tapHint:'اضغط الدائرة للتسبيح',target:'الهدف',completed:'اكتمل الهدف ✓',done:'تم الذكر، بارك الله فيك',date:'اليوم'
 },
 en:{
-  app:'Miqat',home:'Home',qibla:'Qibla',calendar:'Calendar',dhikr:'Dhikr',settings:'Settings',
+  app:'Inaba',home:'Home',qibla:'Qibla',calendar:'Calendar',dhikr:'Dhikr',settings:'Settings',
   fajr:'Fajr',sunrise:'Sunrise',dhuhr:'Dhuhr',asr:'Asr',maghrib:'Maghrib',isha:'Isha',
   nextPrayer:'Next prayer',nextBadge:'Next',tomorrow:'Tomorrow',remaining:'Time remaining',todayTimes:'Today’s times',
   share:'Share',shareText:'Prayer times',copied:'Times copied',located:'Location detected',
@@ -1050,8 +1050,8 @@ function watchAd(){
 }
 /* ===== Native bridge (Android app; no-op in a browser) ===== */
 const NATIVE=typeof window.Android!=='undefined';
-Object.assign(T.ar,{inMinutes:'بعد',notifPerm:'صلاحية الإشعارات',granted:'مفعّلة',askPerm:'السماح',bubbleOn:'فقاعة الأذكار عند فتح القفل',overlayNeed:'فعّل «الظهور فوق التطبيقات» لميقات ثم أعد المحاولة',nativeOnly:'هذه الميزة متاحة في تطبيق أندرويد فقط'});
-Object.assign(T.en,{inMinutes:'in',notifPerm:'Notification permission',granted:'Allowed',askPerm:'Allow',bubbleOn:'Adhkar bubble on unlock',overlayNeed:'Enable “Display over other apps” for Miqat, then try again',nativeOnly:'This feature is available in the Android app only'});
+Object.assign(T.ar,{inMinutes:'بعد',notifPerm:'صلاحية الإشعارات',granted:'مفعّلة',askPerm:'السماح',bubbleOn:'فقاعة الأذكار عند فتح القفل',overlayNeed:'فعّل «الظهور فوق التطبيقات» لإنابة ثم أعد المحاولة',nativeOnly:'هذه الميزة متاحة في تطبيق أندرويد فقط'});
+Object.assign(T.en,{inMinutes:'in',notifPerm:'Notification permission',granted:'Allowed',askPerm:'Allow',bubbleOn:'Adhkar bubble on unlock',overlayNeed:'Enable “Display over other apps” for Inaba, then try again',nativeOnly:'This feature is available in the Android app only'});
 const nat=(fn,...a)=>{ try{ return NATIVE&&typeof Android[fn]==='function'?Android[fn](...a):undefined; }catch(e){ return undefined; } };
 let lastSync='';
 window.__onPerm=()=>{ lastSync=''; render(); };

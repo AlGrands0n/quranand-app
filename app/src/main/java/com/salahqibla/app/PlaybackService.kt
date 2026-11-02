@@ -50,7 +50,7 @@ class PlaybackService : Service() {
 
     companion object {
         private const val NOTIF_ID = 4418
-        const val ACTION_STOP = "com.miqat.app.PLAY_STOP"
+        const val ACTION_STOP = "com.inaba.app.PLAY_STOP"
 
         fun start(ctx: Context) {
             val i = Intent(ctx, PlaybackService::class.java)
