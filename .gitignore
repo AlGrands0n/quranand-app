@@ -13,3 +13,6 @@ local.properties
 *.jks
 *.keystore
 keystore.properties
+
+# Debug-only signing key: keeps every CI debug build signed the same way so updates install over each other.
+!app/debug.keystore
