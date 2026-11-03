@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioAttributes
-import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.IBinder
 import android.os.PowerManager
@@ -32,9 +31,9 @@ class AdhanService : Service() {
     // stream depending on what the phone considers active, so every stream counts.
     private val volumeReceiver = object : BroadcastReceiver() {
         override fun onReceive(c: Context, i: Intent) {
-            if (i.action != AudioManager.VOLUME_CHANGED_ACTION) return
-            val now = i.getIntExtra(AudioManager.EXTRA_VOLUME_STREAM_VALUE, -1)
-            val prev = i.getIntExtra(AudioManager.EXTRA_PREV_VOLUME_STREAM_VALUE, -1)
+            if (i.action != VOLUME_CHANGED) return
+            val now = i.getIntExtra(EXTRA_NOW, -1)
+            val prev = i.getIntExtra(EXTRA_PREV, -1)
             if (now >= 0 && prev >= 0 && now < prev) finish()
         }
     }
@@ -45,7 +44,7 @@ class AdhanService : Service() {
         ContextCompat.registerReceiver(
             this,
             volumeReceiver,
-            IntentFilter(AudioManager.VOLUME_CHANGED_ACTION),
+            IntentFilter(VOLUME_CHANGED),
             ContextCompat.RECEIVER_NOT_EXPORTED
         )
     }
@@ -130,5 +129,10 @@ class AdhanService : Service() {
         private const val NOTIF_ID = 4420
         private const val RUN_NOTIF_ID = 4419
         const val ACTION_STOP = "com.inaba.app.ADHAN_STOP"
+
+        // The volume broadcast and its extras are hidden in the public SDK, so the literal names are used.
+        private const val VOLUME_CHANGED = "android.media.VOLUME_CHANGED_ACTION"
+        private const val EXTRA_NOW = "android.media.EXTRA_VOLUME_STREAM_VALUE"
+        private const val EXTRA_PREV = "android.media.EXTRA_PREV_VOLUME_STREAM_VALUE"
     }
 }
