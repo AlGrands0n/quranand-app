@@ -7,6 +7,9 @@
     <string name="ch_service">فقاعة الأذكار</string>
     <string name="ch_service_desc">تُظهر فقاعة الأذكار بعد فتح القفل</string>
     <string name="ch_downloads">تحميل التلاوات</string>
+    <string name="ch_prayer_fallback">تنبيه الصلاة (احتياطي)</string>
+    <string name="ch_adhan_run">تشغيل الأذان</string>
+    <string name="adhan_stop">إيقاف الأذان</string>
     <string name="ch_playback">تشغيل التلاوة</string>
     <string name="play_text">التلاوة تعمل في الخلفية</string>
     <string name="play_stop">إيقاف</string>

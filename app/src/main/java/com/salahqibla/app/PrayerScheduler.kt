@@ -11,7 +11,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.AudioAttributes
 import android.media.RingtoneManager
-import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
@@ -24,13 +23,14 @@ import org.json.JSONObject
  * The page sends a JSON payload which is stored, so alarms can be rebuilt after a reboot.
  */
 object PrayerScheduler {
-    // Sound is fixed when a channel is created, so the id changes whenever the sound does.
-    const val CH_PRAYER = "adhan_alarm"
+    const val CH_PRAYER = "prayer_alert"             // silent: the adhan service plays the sound
+    const val CH_PRAYER_FALLBACK = "prayer_fallback" // alarm tone, only if the adhan service cannot start
+    const val CH_ADHAN_RUN = "adhan_run"             // quiet notification shown while the adhan plays
     const val CH_SERVICE = "bubble"
     const val CH_PLAYBACK = "playback"
     const val CH_DOWNLOADS = "downloads"
 
-    private const val OLD_PRAYER_CHANNEL = "prayer"
+    private val OLD_CHANNELS = listOf("prayer", "adhan_alarm")
     private const val PREFS = "inaba"
     private const val KEY_PAYLOAD = "payload"
     private const val KEY_IDS = "scheduled"
@@ -43,20 +43,29 @@ object PrayerScheduler {
     fun ensureChannels(ctx: Context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         val nm = ctx.getSystemService(NotificationManager::class.java)
-        nm.deleteNotificationChannel(OLD_PRAYER_CHANNEL)
+        OLD_CHANNELS.forEach { nm.deleteNotificationChannel(it) }
 
-        // Adhan channel: plays through the alarm stream, so it is audible even when
-        // the ringer is on vibrate or the notification volume is low.
         val alarmAttrs = AudioAttributes.Builder()
             .setUsage(AudioAttributes.USAGE_ALARM)
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .build()
+
         val prayer = NotificationChannel(CH_PRAYER, ctx.getString(R.string.ch_prayer), NotificationManager.IMPORTANCE_HIGH).apply {
             description = ctx.getString(R.string.ch_prayer_desc)
-            setSound(adhanUri(ctx), alarmAttrs)
+            setSound(null, null)
+            enableVibration(false)
+            lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
+        }
+        val fallback = NotificationChannel(CH_PRAYER_FALLBACK, ctx.getString(R.string.ch_prayer_fallback), NotificationManager.IMPORTANCE_HIGH).apply {
+            description = ctx.getString(R.string.ch_prayer_desc)
+            setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM), alarmAttrs)
             enableVibration(true)
             vibrationPattern = longArrayOf(0, 800, 400, 800)
             lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
+        }
+        val run = NotificationChannel(CH_ADHAN_RUN, ctx.getString(R.string.ch_adhan_run), NotificationManager.IMPORTANCE_LOW).apply {
+            setSound(null, null)
+            enableVibration(false)
         }
         val service = NotificationChannel(CH_SERVICE, ctx.getString(R.string.ch_service), NotificationManager.IMPORTANCE_MIN).apply {
             description = ctx.getString(R.string.ch_service_desc)
@@ -64,17 +73,7 @@ object PrayerScheduler {
         }
         val playback = NotificationChannel(CH_PLAYBACK, ctx.getString(R.string.ch_playback), NotificationManager.IMPORTANCE_LOW)
         val downloads = NotificationChannel(CH_DOWNLOADS, ctx.getString(R.string.ch_downloads), NotificationManager.IMPORTANCE_LOW)
-        nm.createNotificationChannels(listOf(prayer, service, playback, downloads))
-    }
-
-    /**
-     * The adhan sound: res/raw/adhan.mp3 when the file is added to the project,
-     * otherwise the system alarm tone.
-     */
-    private fun adhanUri(ctx: Context): Uri {
-        val id = ctx.resources.getIdentifier("adhan", "raw", ctx.packageName)
-        return if (id != 0) Uri.parse("android.resource://${ctx.packageName}/$id")
-        else RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+        nm.createNotificationChannels(listOf(prayer, fallback, run, service, playback, downloads))
     }
 
     fun notificationsGranted(ctx: Context): Boolean {
@@ -102,6 +101,23 @@ object PrayerScheduler {
         reschedule(ctx)
     }
 
+    /** A prayer notification. Silent on the normal path, because the adhan service plays the sound. */
+    @Suppress("MissingPermission")
+    fun postPrayerNotification(ctx: Context, id: Int, title: String, body: String, channel: String = CH_PRAYER) {
+        if (!notificationsGranted(ctx)) return
+        val open = PendingIntent.getActivity(ctx, 0, Intent(ctx, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
+        val notification = NotificationCompat.Builder(ctx, channel)
+            .setSmallIcon(R.drawable.ic_stat_miqat)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setContentIntent(open)
+            .build()
+        NotificationManagerCompat.from(ctx).notify(id, notification)
+    }
+
     private fun alarmIntent(ctx: Context, id: Int, title: String?, body: String?, create: Boolean): PendingIntent? {
         val intent = Intent(ctx, PrayerReceiver::class.java)
             .setAction(ACTION_PRAYER)
@@ -126,16 +142,22 @@ object PrayerScheduler {
         val obj = JSONObject(json)
         val scheduled = mutableSetOf<String>()
         if (obj.optBoolean("enabled") && notificationsGranted(ctx)) {
-            val items = obj.optJSONArray("items")
+            val arr = obj.optJSONArray("items")
             val now = System.currentTimeMillis()
-            for (i in 0 until (items?.length() ?: 0)) {
-                val item = items!!.getJSONObject(i)
-                val at = item.getLong("t")
-                if (at <= now) continue
+            val show = PendingIntent.getActivity(ctx, 0, Intent(ctx, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
+            // Newest first: the system displays the last alarm set as the "next alarm",
+            // so the earliest one is set last.
+            val due = (0 until (arr?.length() ?: 0))
+                .mapNotNull { arr?.getJSONObject(it) }
+                .filter { it.getLong("t") > now }
+                .sortedByDescending { it.getLong("t") }
+            for (item in due) {
                 val id = item.getInt("id")
+                val at = item.getLong("t")
                 val pi = alarmIntent(ctx, id, item.getString("title"), item.optString("body"), true) ?: continue
-                // Inexact but allowed during Doze, so no exact-alarm permission is needed.
-                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, at, pi)
+                // An alarm clock is exact, works in Doze, and lets the adhan service start.
+                // It shows an alarm icon in the status bar.
+                am.setAlarmClock(AlarmManager.AlarmClockInfo(at, show), pi)
                 scheduled.add(id.toString())
             }
         }
@@ -143,30 +165,23 @@ object PrayerScheduler {
     }
 }
 
-/** Shows the prayer notification when its alarm fires. */
+/** Fires at prayer time: starts the adhan service, or falls back to a notification with the alarm tone. */
 class PrayerReceiver : BroadcastReceiver() {
-    @Suppress("MissingPermission")
     override fun onReceive(ctx: Context, intent: Intent) {
         val title = intent.getStringExtra("title") ?: return
         val body = intent.getStringExtra("body") ?: ""
         val id = intent.getIntExtra("id", 0)
         PrayerScheduler.ensureChannels(ctx)
-        if (!PrayerScheduler.notificationsGranted(ctx)) return
-
-        val open = ctx.packageManager.getLaunchIntentForPackage(ctx.packageName)?.let {
-            PendingIntent.getActivity(ctx, 0, it, PendingIntent.FLAG_IMMUTABLE)
+        val svc = Intent(ctx, AdhanService::class.java)
+            .putExtra("id", id)
+            .putExtra("title", title)
+            .putExtra("body", body)
+        try {
+            ctx.startForegroundService(svc)
+        } catch (_: Exception) {
+            // The system refused to start the service: show a notification with the alarm tone instead.
+            PrayerScheduler.postPrayerNotification(ctx, id, title, body, PrayerScheduler.CH_PRAYER_FALLBACK)
         }
-        // Sound and vibration come from the channel, so they follow the adhan setting.
-        val notification = NotificationCompat.Builder(ctx, PrayerScheduler.CH_PRAYER)
-            .setSmallIcon(R.drawable.ic_stat_miqat)
-            .setContentTitle(title)
-            .setContentText(body)
-            .setCategory(NotificationCompat.CATEGORY_ALARM)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setAutoCancel(true)
-            .setContentIntent(open)
-            .build()
-        NotificationManagerCompat.from(ctx).notify(id, notification)
     }
 }
 
