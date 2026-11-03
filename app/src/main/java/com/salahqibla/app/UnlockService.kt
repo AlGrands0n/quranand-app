@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.os.SystemClock
 import android.provider.Settings
 import android.view.Gravity
 import android.view.MotionEvent
@@ -37,7 +38,8 @@ class UnlockService : Service() {
     private val screenReceiver = object : BroadcastReceiver() {
         override fun onReceive(c: Context, i: Intent) {
             when (i.action) {
-                Intent.ACTION_USER_PRESENT -> showDock()
+                // A short delay lets the lock screen finish closing before the bubble appears.
+                Intent.ACTION_USER_PRESENT -> ui.postDelayed({ showDock() }, 400)
                 Intent.ACTION_SCREEN_OFF -> removeDock()
             }
         }
@@ -92,17 +94,23 @@ class UnlockService : Service() {
 
     private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()
 
-    private fun currentDhikr(): String {
+    /** A random dhikr that is never the same one twice in a row, so repeats only happen by chance. */
+    private fun pickDhikr(): String {
         val morning = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY) < 12
         val list = resources.getStringArray(if (morning) R.array.dhikr_morning else R.array.dhikr_evening)
-        return list[((System.currentTimeMillis() / 60_000) % list.size).toInt()]
+        if (list.size < 2) return list[0]
+        val prefs = getSharedPreferences(PREFS, MODE_PRIVATE)
+        val last = prefs.getInt(KEY_LAST_DHIKR, -1)
+        val pick = list.indices.filter { it != last }.random()
+        prefs.edit().putInt(KEY_LAST_DHIKR, pick).apply()
+        return list[pick]
     }
 
     private fun showDock() {
         if (dock != null || !Settings.canDrawOverlays(this)) return
 
         val message = TextView(this).apply {
-            text = currentDhikr()
+            text = pickDhikr()
             textSize = 16f
             setLineSpacing(0f, 1.45f)
             setTextColor(Color.parseColor("#f1f7f5"))
@@ -161,15 +169,19 @@ class UnlockService : Service() {
         var startX = 0
         var startY = 0
         var moved = false
+        var pressed = false
+        val shownAt = SystemClock.uptimeMillis()
         root.setOnTouchListener { _, e ->
             when (e.action) {
                 MotionEvent.ACTION_DOWN -> {
+                    pressed = true
                     downX = e.rawX; downY = e.rawY
                     startX = params.x; startY = params.y
                     moved = false
                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
+                    if (!pressed) return@setOnTouchListener true
                     val dx = e.rawX - downX
                     val dy = e.rawY - downY
                     if (abs(dx) > dp(8) || abs(dy) > dp(8)) moved = true
@@ -179,7 +191,15 @@ class UnlockService : Service() {
                     true
                 }
                 MotionEvent.ACTION_UP -> {
-                    if (!moved) dismiss()
+                    // Only a tap that started on the bubble counts, and not right after it appears:
+                    // the touch that unlocked the phone can end on the bubble and close it at once.
+                    val tap = pressed && !moved && SystemClock.uptimeMillis() - shownAt > 1000
+                    pressed = false
+                    if (tap) dismiss()
+                    true
+                }
+                MotionEvent.ACTION_CANCEL -> {
+                    pressed = false
                     true
                 }
                 else -> true
@@ -218,6 +238,8 @@ class UnlockService : Service() {
     companion object {
         private const val NOTIF_ID = 4417
         const val ACTION_STOP = "com.inaba.app.BUBBLE_STOP"
+        private const val PREFS = "inaba"
+        private const val KEY_LAST_DHIKR = "last_dhikr"
 
         fun start(ctx: Context) {
             val i = Intent(ctx, UnlockService::class.java)
